@@ -6,7 +6,9 @@ export enum TraverseOrder {
     POST = "post"
 }
 
-class BalanceNode<K extends string | number, V> implements IBalanceNode {
+class BalanceNode<K extends string | number, V>
+    implements IBalanceNode {
+
     public left?: BalanceNode<K, V>;
     public right?: BalanceNode<K, V>;
     public height: number = 1;
@@ -24,7 +26,9 @@ interface IBinarySearchTree<K extends string | number, V> {
     getSize(): number;
 }
 
-export class BinarySearchTreeAVL<K extends string | number, V> implements IBinarySearchTree<K, V> {
+export class BinarySearchTreeAVL<K extends string | number, V>
+    implements IBinarySearchTree<K, V> {
+
     private _root?: BalanceNode<K, V>;
     private _size: number = 0;
 
@@ -46,7 +50,9 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
      * @param value The value to associate with the key.
      * @returns true if the key was inserted, false if the key already exists.
      */
-    insert(key: K, value: V): boolean {
+    insert(key: K, value: V)
+        : boolean {
+
         const preInsertSize: number = this._size;
         this._root = this._insert(key, value, this._root);
 
@@ -58,8 +64,11 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
      * @param key The key associated with the value.
      * @returns The value if found, null otherwise.
      */
-    find(key: K): V | null {
-        const foundNode: BalanceNode<K, V> | undefined =  this._find(key, this._root);
+    find(key: K)
+        : V | null {
+
+        const foundNode: BalanceNode<K, V> | undefined =
+            this._find(key, this._root);
 
         return foundNode?.value ?? null;
     }
@@ -69,7 +78,9 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
      * @param key The key of the node.
      * @returns true if the node was deleted, false if the key was not found.
      */
-    delete(key: K): boolean {
+    delete(key: K)
+        : boolean {
+
         const preInsertSize: number = this._size;
         this._root = this._delete(key, this._root);
 
@@ -77,11 +88,14 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
     }
 
     /**
-     * Finds the value associated with the key in the AVL Tree, then deletes its node.
+     * Finds the value associated with the key in the AVL Tree,
+     *  then deletes its node.
      * @param key The key of the node.
      * @returns The value if found, null otherwise.
      */
-    remove(key: K): V | null {
+    remove(key: K)
+        : V | null {
+
         const foundValue: V | null = this.find(key);
 
         if (foundValue) { this.delete(key); }
@@ -94,7 +108,9 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
      * @param order The order to traverse, using TraverseOrder enum.
      * @returns An array of all values, in traversal order.
      */
-    traverse(order: TraverseOrder = TraverseOrder.IN): V[] {
+    traverse(order: TraverseOrder = TraverseOrder.IN)
+        : V[] {
+
         const values: V[] = [];
         this._traverse(order, values, this._root);
 
@@ -105,23 +121,31 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
      * Prints the keys of the tree, indented to visual tree structure.
      * @param indentString The string to indent with ("\t" is default).
      */
-    printTree(indentString: string = "\t"): void {
+    printTree(indentString: string = "\t")
+        : void {
+
         this._printTree(indentString, 0, this._root);
     }
 
-    private _insert(key: K, value: V, node?: BalanceNode<K, V>): BalanceNode<K, V> {
+    private _insert(key: K, value: V, node?: BalanceNode<K, V>)
+        : BalanceNode<K, V> {
+
         if (!node) {
             this._size++;
             return new BalanceNode<K, V>(key, value);
         }
-        if (key < node.key) { node.left = this._insert(key, value, node.left);}
-        else if (key > node.key) { node.right = this._insert(key, value, node.right); }
+        if (key < node.key)
+            { node.left = this._insert(key, value, node.left); }
+        else if (key > node.key)
+            { node.right = this._insert(key, value, node.right); }
         else { return node; }
 
         return balance(node);
     }
 
-    private _find(key: K, node?: BalanceNode<K, V>): BalanceNode<K, V> | undefined {
+    private _find(key: K, node?: BalanceNode<K, V>)
+        : BalanceNode<K, V> | undefined {
+
         if (!node) { return; }
 
         if (key < node.key) { return this._find(key, node.left); }
@@ -129,14 +153,17 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
         else { return node; }
     }
 
-    private _delete(key: K, node?: BalanceNode<K, V>): BalanceNode<K, V> | undefined {
+    private _delete(key: K, node?: BalanceNode<K, V>)
+        : BalanceNode<K, V> | undefined {
+
         if (!node) { return; }
 
         if (key < node.key) { node.left = this._delete(key, node.left); }
         else if (key > node.key) { node.right = this._delete(key, node.right);}
         else {
             if (node.left && node.right) {
-                const successorNode: BalanceNode<K, V> = this._findMinNode(node.right);
+                const successorNode: BalanceNode<K, V> =
+                    this._findMinNode(node.right);
 
                 node.key = successorNode.key;
                 node.value = successorNode.value;
@@ -153,7 +180,10 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
         return balance(node);
     }
 
-    private _traverse(order: TraverseOrder, values: V[], node?: BalanceNode<K, V>): void {
+    private _traverse(order: TraverseOrder, values: V[],
+                      node?: BalanceNode<K, V>)
+        : void {
+
         if (!node) { return; }
 
         if (order === TraverseOrder.PRE) { values.push(node.value); }
@@ -163,7 +193,10 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
         if (order === TraverseOrder.POST) { values.push(node.value); }
     }
 
-    private _printTree(indentString: string, indentLevel: number, node?: BalanceNode<K, V>): void {
+    private _printTree(indentString: string, indentLevel: number,
+                       node?: BalanceNode<K, V>)
+        : void {
+
         const fullIndentString: string = indentString.repeat(indentLevel);
 
         if (!node) {
@@ -176,7 +209,9 @@ export class BinarySearchTreeAVL<K extends string | number, V> implements IBinar
         this._printTree(indentString, indentLevel + 1, node.left);
     }
 
-    private _findMinNode(node: BalanceNode<K, V>): BalanceNode<K, V> {
+    private _findMinNode(node: BalanceNode<K, V>)
+        : BalanceNode<K, V> {
+
         while (node.left) { node = node.left; }
 
         return node;
