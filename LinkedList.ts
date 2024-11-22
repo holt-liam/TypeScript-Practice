@@ -19,8 +19,7 @@ interface ILinkedList<T> {
     clear(): void;
 }
 
-export class LinkedList<T>
-    implements ILinkedList<T> {
+export class LinkedList<T> implements ILinkedList<T> {
 
     private _head?: LLNode<T>;
     private _tail?: LLNode<T>;
@@ -28,8 +27,7 @@ export class LinkedList<T>
 
     getLength(): number { return this._length; }
 
-    unshift(data: T)
-        : void {
+    unshift(data: T): void {
         const newNode = new LLNode<T>(data);
 
         newNode.next = this._head;
@@ -43,9 +41,7 @@ export class LinkedList<T>
         this._length++;
     }
 
-    shift()
-        : LLNode<T> | null {
-
+    shift(): LLNode<T> | null {
         if (!this._head) { return null; }
 
         const shiftedNode: LLNode<T> = this._head;
@@ -60,9 +56,7 @@ export class LinkedList<T>
         return shiftedNode;
     }
 
-    push(data: T)
-        : void {
-
+    push(data: T): void {
         const newNode = new LLNode<T>(data);
 
         newNode.prev = this._tail;
@@ -76,8 +70,7 @@ export class LinkedList<T>
         this._length++;
     }
 
-    pop()
-        : LLNode<T> | null {
+    pop(): LLNode<T> | null {
         if (!this._tail) { return null; }
 
         const poppedNode: LLNode<T> = this._tail;
@@ -92,15 +85,9 @@ export class LinkedList<T>
         return poppedNode;
     }
 
-    at(index: number)
-        : T {
+    at(index: number): T { return this._travelToNode(index).data; }
 
-        return this._travelToNode(index).data;
-    }
-
-    insertAt(index: number, data: T)
-        : void {
-
+    insertAt(index: number, data: T): void {
         if (index === 0 || index === -this._length) { this.unshift(data); }
         else if (index === this._length) { this.push(data); }
         else {
@@ -117,15 +104,11 @@ export class LinkedList<T>
         }
     }
 
-    removeAt(index: number)
-        : T {
-
+    removeAt(index: number): T {
         return this._removeNode(this._travelToNode(index)).data;
     }
 
-    traverse()
-        : T[] {
-
+    traverse(): T[] {
         if (this._length === 0) { return []; }
 
         const data: T[] = new Array(this._length);
@@ -138,34 +121,27 @@ export class LinkedList<T>
         return data;
     }
 
-    findMatches(comparator: (data: T) => boolean)
-        : T[] {
-
+    findMatches(comparator: (data: T) => boolean): T[] {
         const nodeMatches: LLNode<T>[] = this._findNodeMatches(comparator);
 
         return nodeMatches.map((node: LLNode<T>): T => node.data);
     }
 
-    removeMatches(comparator: (data: T) => boolean)
-        : T[] {
-
+    removeMatches(comparator: (data: T) => boolean): T[] {
         const nodeMatches: LLNode<T>[] = this._findNodeMatches(comparator);
 
-        return nodeMatches.map((node: LLNode<T>)
-            : T => this._removeNode(node).data);
+        return nodeMatches.map(
+            (node: LLNode<T>): T => this._removeNode(node).data
+        );
     }
 
-    clear()
-        : void {
-
+    clear(): void {
         this._head = undefined;
         this._tail = undefined;
         this._length = 0;
     }
 
-    private _findNodeMatches(comparator: (data: T) => boolean)
-        : LLNode<T>[] {
-
+    private _findNodeMatches(comparator: (data: T) => boolean): LLNode<T>[] {
         const nodeMatches: LLNode<T>[] = [];
 
         for (let current: LLNode<T> | undefined = this._head;
@@ -175,9 +151,7 @@ export class LinkedList<T>
         return nodeMatches;
     }
 
-    private _travelToNode(index: number)
-        : LLNode<T> {
-
+    private _travelToNode(index: number): LLNode<T> {
         if (index < 0) { index = this._length + index; }
         if (index < 0 || index >= this._length)
             { throw new RangeError(`Index ${index} is out of bounds.`); }
@@ -199,9 +173,7 @@ export class LinkedList<T>
         return current;
     }
 
-    private _removeNode(node: LLNode<T>)
-        : LLNode<T> {
-
+    private _removeNode(node: LLNode<T>): LLNode<T> {
         // point previous node past current;
         // if no previous node, current is head, increment head
         if (node.prev) { node.prev.next = node.next; }

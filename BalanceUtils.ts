@@ -6,14 +6,18 @@ class BalanceError extends Error {
     }
 }
 
-export interface IBalanceNode {
-    left?: IBalanceNode;
-    right?: IBalanceNode;
+export type KeyType = string | number;
+
+export interface IBalanceNode<K extends KeyType> {
+    key: K;
+    left?: IBalanceNode<K>;
+    right?: IBalanceNode<K>;
     height: number;
 }
 
-
-export function balance<T extends IBalanceNode>(node: T): T {
+export function balance<K extends KeyType, T extends IBalanceNode<K>>(
+    node: T
+): T {
     update_height(node);
 
     const balanceFactor: number = getBalanceFactor(node);
@@ -36,26 +40,38 @@ export function balance<T extends IBalanceNode>(node: T): T {
     return node;
 }
 
-function getHeight<T extends IBalanceNode>(node?: T): number {
-    return node?.height ?? 0;
+export function splay<K extends KeyType, T extends IBalanceNode<K>>(
+    key: K, node?: T
+): T | undefined {
+    if (!node || node.key === key) { return node; }
+
+    return node;
 }
 
-function getBalanceFactor<T extends IBalanceNode>(node?: T): number {
-    return getHeight(node?.left) - getHeight(node?.right);
-}
+function getHeight<K extends KeyType, T extends IBalanceNode<K>>(
+    node?: T
+): number { return node?.height ?? 0; }
 
-function update_height<T extends IBalanceNode>(node: T): void {
+function getBalanceFactor<K extends KeyType, T extends IBalanceNode<K>>(
+    node?: T
+): number { return getHeight(node?.left) - getHeight(node?.right); }
+
+function update_height<K extends KeyType, T extends IBalanceNode<K>>(
+    node: T
+): void {
     node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
 }
 
-function rotateRight<T extends IBalanceNode>(node: T): T {
-    if (!node || !node.left) { throw new BalanceError("Invalid node for rotation."); }
+function rotateRight<K extends KeyType, T extends IBalanceNode<K>>(
+    node: T
+): T {
+    if (!node || !node.left)
+        { throw new BalanceError("Invalid node for rotation."); }
 
     const newSubRoot: T = node.left as T;
-    const subTreeToMove: T | undefined = newSubRoot.right as T | undefined;
 
+    node.left = newSubRoot.right;
     newSubRoot.right = node;
-    node.left = subTreeToMove;
 
     update_height(node);
     update_height(newSubRoot);
@@ -63,14 +79,16 @@ function rotateRight<T extends IBalanceNode>(node: T): T {
     return newSubRoot;
 }
 
-function rotateLeft<T extends IBalanceNode>(node: T): T {
-    if (!node || !node.right) { throw new BalanceError("Invalid node for rotation."); }
+function rotateLeft<K extends KeyType, T extends IBalanceNode<K>>(
+    node: T
+): T {
+    if (!node || !node.right)
+        { throw new BalanceError("Invalid node for rotation."); }
 
     const newSubRoot: T = node.right as T;
-    const subTreeToMove: T | undefined = newSubRoot.left as T | undefined;
 
+    node.right = newSubRoot.left;
     newSubRoot.left = node;
-    node.right = subTreeToMove;
 
     update_height(node);
     update_height(newSubRoot);
