@@ -20,7 +20,6 @@ interface ILinkedList<T> {
 }
 
 export class LinkedList<T> implements ILinkedList<T> {
-
     private _head?: LLNode<T>;
     private _tail?: LLNode<T>;
     private _length: number = 0;

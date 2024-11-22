@@ -1,10 +1,10 @@
-import { BinarySearchTreeAVL, TraverseOrder } from "../AVLTree";
+import { AvlTree, TraverseOrder } from "../AVLTree";
 import { character, characters, checkHeightAVL } from "./TestUtils";
 
 
 describe("BinarySearchTreeAVL", (): void => {
     it("should insert and find nodes correctly", (): void => {
-        const bst = new BinarySearchTreeAVL<string, character>();
+        const bst = new AvlTree<string, character>();
 
         characters.forEach((char: character): void => expect(bst.insert(char.name, char)).toBe(true));
         expect(bst.getSize()).toBe(characters.length);
@@ -20,7 +20,7 @@ describe("BinarySearchTreeAVL", (): void => {
         expect(checkHeightAVL(bst)).toBe(true);
     });
     it("should delete correctly", (): void => {
-        const bst = new BinarySearchTreeAVL<string, character>();
+        const bst = new AvlTree<string, character>();
 
         characters.forEach((char: character): void => expect(bst.insert(char.name, char)).toBe(true));
         expect(bst.delete("NULL")).toBe(false);
@@ -57,7 +57,7 @@ describe("BinarySearchTreeAVL", (): void => {
         expect(bst.remove(characters[7].name)).toBe(null);
     });
     it ("should delete, remove, find correctly in an empty tree", (): void => {
-        const bst = new BinarySearchTreeAVL<string, character>();
+        const bst = new AvlTree<string, character>();
 
         expect(bst.delete("NULL")).toBe(false);
         expect(bst.find("NULL")).toBe(null);
@@ -67,7 +67,7 @@ describe("BinarySearchTreeAVL", (): void => {
         expect(bst.traverse()).toEqual([]);
     });
     it ("should delete, remove, find correctly in a one node tree", (): void => {
-        const bst = new BinarySearchTreeAVL<string, character>();
+        const bst = new AvlTree<string, character>();
 
         bst.insert(characters[0].name, characters[0]);
         expect(bst.traverse()).toEqual([characters[0]]);
@@ -84,13 +84,13 @@ describe("BinarySearchTreeAVL", (): void => {
         expect(bst.traverse()).toEqual([]);
     });
     it ("should handle insert correctly with existing keys", (): void => {
-        const bst = new BinarySearchTreeAVL<string, character>();
+        const bst = new AvlTree<string, character>();
 
         characters.forEach((char: character): boolean => bst.insert(char.name, char));
         characters.forEach((char: character): void => expect(bst.insert(char.name, char)).toBe(false));
     });
     it("should traverse the tree in different orders", (): void => {
-        const bst = new BinarySearchTreeAVL<number, string>();
+        const bst = new AvlTree<number, string>();
 
         [5, 3, 7, 2, 4, 6, 8].forEach((key: number): boolean => bst.insert(key, `${key}`));
 
@@ -99,7 +99,7 @@ describe("BinarySearchTreeAVL", (): void => {
         expect(bst.traverse(TraverseOrder.POST)).toEqual(["2", "4", "3", "6", "8", "7", "5"]);
     });
     it("should handle large datasets correctly", (): void => {
-        const bst = new BinarySearchTreeAVL<number, string>();
+        const bst = new AvlTree<number, string>();
         const keys: number[] = Array.from({ length: 10000 }, (_: unknown, i: number): number => i);
 
         keys.forEach((key: number): boolean => bst.insert(key, `${key}`));

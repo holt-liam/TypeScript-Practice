@@ -1,4 +1,5 @@
-import { KeyType, IBalanceNode, balance  } from "./BalanceUtils";
+import { BstKeyType, IBstHeightNode, balance } from "./BalanceUtils";
+
 
 export enum TraverseOrder {
     PRE = "pre",
@@ -6,16 +7,15 @@ export enum TraverseOrder {
     POST = "post"
 }
 
-class BalanceNode<K extends KeyType, V> implements IBalanceNode<K> {
+class AvlNode<K extends BstKeyType, V> implements IBstHeightNode<K> {
+    left?: AvlNode<K, V>;
+    right?: AvlNode<K, V>;
+    height: number = 1;
 
-    public left?: BalanceNode<K, V>;
-    public right?: BalanceNode<K, V>;
-    public height: number = 1;
-
-    constructor(public key: K, public value: V){}
+    constructor(public key: K, public value: V) {}
 }
 
-interface IBinarySearchTree<K extends KeyType, V> {
+interface IAvlTree<K extends BstKeyType, V> {
     insert(key: K, value: V): boolean;
     find(key: K): V | null;
     delete(key: K): boolean;
@@ -25,9 +25,8 @@ interface IBinarySearchTree<K extends KeyType, V> {
     getSize(): number;
 }
 
-export class BinarySearchTreeAVL<K extends KeyType, V>
-    implements IBinarySearchTree<K, V> {
-    private _root?: BalanceNode<K, V>;
+export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
+    private _root?: AvlNode<K, V>;
     private _size: number = 0;
 
     /**
@@ -110,12 +109,10 @@ export class BinarySearchTreeAVL<K extends KeyType, V>
         this._printTree(indentString, 0, this._root);
     }
 
-    private _insert(
-        key: K, value: V, node?: BalanceNode<K, V>
-    ): BalanceNode<K, V> {
+    private _insert(key: K, value: V, node?: AvlNode<K, V>): AvlNode<K, V> {
         if (!node) {
             this._size++;
-            return new BalanceNode<K, V>(key, value);
+            return new AvlNode<K, V>(key, value);
         }
         if (key < node.key)
             { node.left = this._insert(key, value, node.left); }
@@ -126,9 +123,7 @@ export class BinarySearchTreeAVL<K extends KeyType, V>
         return balance(node);
     }
 
-    private _find(
-        key: K, node?: BalanceNode<K, V>
-    ): BalanceNode<K, V> | undefined {
+    private _find(key: K, node?: AvlNode<K, V>): AvlNode<K, V> | undefined {
         if (!node) { return; }
 
         if (key < node.key) { return this._find(key, node.left); }
@@ -136,16 +131,14 @@ export class BinarySearchTreeAVL<K extends KeyType, V>
         else { return node; }
     }
 
-    private _delete(
-        key: K, node?: BalanceNode<K, V>
-    ): BalanceNode<K, V> | undefined {
+    private _delete(key: K, node?: AvlNode<K, V>): AvlNode<K, V> | undefined {
         if (!node) { return; }
 
         if (key < node.key) { node.left = this._delete(key, node.left); }
         else if (key > node.key) { node.right = this._delete(key, node.right);}
         else {
             if (node.left && node.right) {
-                const successorNode: BalanceNode<K, V> =
+                const successorNode: AvlNode<K, V> =
                     this._findMinNode(node.right);
 
                 node.key = successorNode.key;
@@ -164,7 +157,7 @@ export class BinarySearchTreeAVL<K extends KeyType, V>
     }
 
     private _traverse(
-        order: TraverseOrder, values: V[], node?: BalanceNode<K, V>
+        order: TraverseOrder, values: V[], node?: AvlNode<K, V>
     ): void {
         if (!node) { return; }
 
@@ -176,7 +169,7 @@ export class BinarySearchTreeAVL<K extends KeyType, V>
     }
 
     private _printTree(
-        indentString: string, indentLevel: number, node?: BalanceNode<K, V>
+        indentString: string, indentLevel: number, node?: AvlNode<K, V>
     ): void {
         const fullIndentString: string = indentString.repeat(indentLevel);
 
@@ -190,7 +183,7 @@ export class BinarySearchTreeAVL<K extends KeyType, V>
         this._printTree(indentString, indentLevel + 1, node.left);
     }
 
-    private _findMinNode(node: BalanceNode<K, V>): BalanceNode<K, V> {
+    private _findMinNode(node: AvlNode<K, V>): AvlNode<K, V> {
         while (node.left) { node = node.left; }
 
         return node;

@@ -22,13 +22,16 @@ export const characters: character[] = [
     {name: "Javik", class: "Vanguard", gun: "Assault Rifle"}
 ];
 
-interface IAvlHeight {
+interface IBstBalanceCheck {
     getHeight(): number;
     getSize(): number;
 }
 
-export function checkHeightAVL<T extends IAvlHeight>(bst: T): boolean {
-    const minHeight: number = Math.ceil(Math.log2(bst.getSize() + 1));
-    const maxHeight: number = Math.floor(1.44 * Math.log2(bst.getSize() + 2) - 0.328);
+export function checkHeightAVL<T extends IBstBalanceCheck>(bst: T): boolean {
+    const minHeight: number =
+        Math.ceil(Math.log2(bst.getSize() + 1));
+    const maxHeight: number =
+        Math.floor(1.44 * Math.log2(bst.getSize() + 2) - 0.328);
+
     return minHeight <= bst.getHeight() && bst.getHeight() <= maxHeight;
 }
