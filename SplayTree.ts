@@ -24,8 +24,8 @@ export class SplayTree<K extends BstKeyType, V> implements ISplayTree<K, V> {
     insert(key: K, value: V): boolean {
         if (!this._root) {
             this._root = new SplayNode<K, V>(key, value);
-            this._size++;
 
+            this._size++;
             return true;
         }
         const currentRoot: SplayNode<K, V> = splay(key, this._root)!;
@@ -39,6 +39,7 @@ export class SplayTree<K extends BstKeyType, V> implements ISplayTree<K, V> {
             newRoot.left = currentRoot.left;
             currentRoot.left = undefined;
 
+            this._size--;
             return true;
         } else {
             const newRoot: SplayNode<K, V> = new SplayNode<K, V>(key, value)!;
@@ -47,6 +48,7 @@ export class SplayTree<K extends BstKeyType, V> implements ISplayTree<K, V> {
             newRoot.right = currentRoot.right;
             currentRoot.right = undefined;
 
+            this._size--;
             return true;
         }
     }
@@ -67,8 +69,9 @@ export class SplayTree<K extends BstKeyType, V> implements ISplayTree<K, V> {
             return null;
         }
 
-        if (!currentRoot.left) { this._root = currentRoot.right; }
-        else {
+        if (!currentRoot.left) {
+            this._root = currentRoot.right;
+        } else {
             this._root = splay(key, currentRoot.left)!;
             this._root.right = currentRoot.right;
         }

@@ -33,13 +33,17 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
      * Returns the height of the AVL Tree.
      * @returns The height of the tree (1 node in tree is height = 1).
      */
-    getHeight(): number { return this._root?.height ?? 0; }
+    getHeight(): number {
+        return this._root?.height ?? 0;
+    }
 
     /**
      * Returns the number of nodes in the AVL Tree.
      * @returns The number of nodes in the tree.
      */
-    getSize(): number { return this._size; }
+    getSize(): number {
+        return this._size;
+    }
 
     /**
      * Inserts a key-value pair into an AVL tree.
@@ -49,7 +53,7 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
      */
     insert(key: K, value: V): boolean {
         const preInsertSize: number = this._size;
-        this._root = this._insert(key, value, this._root);
+        this._root = this.insertNode(key, value, this._root);
 
         return this._size === preInsertSize + 1;
     }
@@ -60,7 +64,7 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
      * @returns The value if found, null otherwise.
      */
     find(key: K): V | null {
-        return this._find(key, this._root)?.value ?? null;
+        return this.findNode(key, this._root)?.value ?? null;
     }
 
     /**
@@ -70,7 +74,7 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
      */
     delete(key: K): boolean {
         const preInsertSize: number = this._size;
-        this._root = this._delete(key, this._root);
+        this._root = this.deleteNode(key, this._root);
 
         return this._size === preInsertSize - 1;
     }
@@ -84,7 +88,9 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
     remove(key: K): V | null {
         const foundValue: V | null = this.find(key);
 
-        if (foundValue) { this.delete(key); }
+        if (foundValue) {
+            this.delete(key);
+        }
 
         return foundValue;
     }
@@ -96,7 +102,7 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
      */
     traverse(order: TraverseOrder = TraverseOrder.IN): V[] {
         const values: V[] = [];
-        this._traverse(order, values, this._root);
+        this.traverseNodes(order, values, this._root);
 
         return values;
     }
@@ -106,69 +112,94 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
      * @param indentString The string to indent with ("\t" is default).
      */
     printTree(indentString: string = "\t"): void {
-        this._printTree(indentString, 0, this._root);
+        this.printTreeNodes(indentString, 0, this._root);
     }
 
-    private _insert(key: K, value: V, node?: AvlNode<K, V>): AvlNode<K, V> {
+    private insertNode(key: K, value: V, node?: AvlNode<K, V>): AvlNode<K, V> {
         if (!node) {
             this._size++;
             return new AvlNode<K, V>(key, value);
         }
-        if (key < node.key)
-            { node.left = this._insert(key, value, node.left); }
-        else if (key > node.key)
-            { node.right = this._insert(key, value, node.right); }
-        else { return node; }
+        if (key < node.key) {
+            node.left = this.insertNode(key, value, node.left);
+        } else if (key > node.key) {
+            node.right = this.insertNode(key, value, node.right);
+        } else {
+            return node;
+        }
 
         return balance(node);
     }
 
-    private _find(key: K, node?: AvlNode<K, V>): AvlNode<K, V> | undefined {
-        if (!node) { return; }
+    private findNode(key: K, node?: AvlNode<K, V>): AvlNode<K, V> | undefined {
+        if (!node) {
+            return;
+        }
 
-        if (key < node.key) { return this._find(key, node.left); }
-        else if (key > node.key) { return this._find(key, node.right); }
-        else { return node; }
+        if (key < node.key) {
+            return this.findNode(key, node.left);
+        } else if (key > node.key) {
+            return this.findNode(key, node.right);
+        } else {
+            return node;
+        }
     }
 
-    private _delete(key: K, node?: AvlNode<K, V>): AvlNode<K, V> | undefined {
-        if (!node) { return; }
+    private deleteNode(key: K, node?: AvlNode<K, V>): AvlNode<K, V> | undefined {
+        if (!node) {
+            return;
+        }
 
-        if (key < node.key) { node.left = this._delete(key, node.left); }
-        else if (key > node.key) { node.right = this._delete(key, node.right);}
-        else {
+        if (key < node.key) {
+            node.left = this.deleteNode(key, node.left);
+        } else if (key > node.key) {
+            node.right = this.deleteNode(key, node.right);
+        } else {
             if (node.left && node.right) {
-                const successorNode: AvlNode<K, V> =
-                    this._findMinNode(node.right);
+                const successor: AvlNode<K, V> = this.findMinNode(node.right);
 
-                node.key = successorNode.key;
-                node.value = successorNode.value;
+                node.key = successor.key;
+                node.value = successor.value;
 
-                node.right = this._delete(successorNode.key, node.right);
+                node.right = this.deleteNode(successor.key, node.right);
             } else {
                 node = node.left ?? node.right;
                 this._size--;
             }
         }
 
-        if (!node) { return node; }
+        if (!node) {
+            return node;
+        }
 
         return balance(node);
     }
 
-    private _traverse(
+    private traverseNodes(
         order: TraverseOrder, values: V[], node?: AvlNode<K, V>
     ): void {
-        if (!node) { return; }
+        if (!node) {
+            return;
+        }
 
-        if (order === TraverseOrder.PRE) { values.push(node.value); }
-        this._traverse(order, values, node.left);
-        if (order === TraverseOrder.IN) { values.push(node.value); }
-        this._traverse(order, values, node.right);
-        if (order === TraverseOrder.POST) { values.push(node.value); }
+        if (order === TraverseOrder.PRE) {
+            values.push(node.value);
+        }
+
+        this.traverseNodes(order, values, node.left);
+
+        if (order === TraverseOrder.IN) {
+            values.push(node.value);
+        }
+
+        this.traverseNodes(order, values, node.right);
+
+        if (order === TraverseOrder.POST) {
+            values.push(node.value);
+        }
     }
 
-    private _printTree(
+    private printTreeNodes(
         indentString: string, indentLevel: number, node?: AvlNode<K, V>
     ): void {
         const fullIndentString: string = indentString.repeat(indentLevel);
@@ -178,13 +209,17 @@ export class AvlTree<K extends BstKeyType, V> implements IAvlTree<K, V> {
             return;
         }
 
-        this._printTree(indentString, indentLevel + 1, node.right);
+        this.printTreeNodes(indentString, indentLevel + 1, node.right);
+
         console.log(fullIndentString, node.key);
-        this._printTree(indentString, indentLevel + 1, node.left);
+
+        this.printTreeNodes(indentString, indentLevel + 1, node.left);
     }
 
-    private _findMinNode(node: AvlNode<K, V>): AvlNode<K, V> {
-        while (node.left) { node = node.left; }
+    private findMinNode(node: AvlNode<K, V>): AvlNode<K, V> {
+        while (node.left) {
+            node = node.left;
+        }
 
         return node;
     }

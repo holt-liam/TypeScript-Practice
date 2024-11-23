@@ -15,9 +15,9 @@ export interface IBstNode<K extends BstKeyType> {
 }
 
 export interface IBstHeightNode<K extends BstKeyType> extends IBstNode<K> {
-    height: number;
     left?: IBstHeightNode<K>;
     right?: IBstHeightNode<K>;
+    height: number;
 }
 
 export function balance<K extends BstKeyType, T extends IBstHeightNode<K>>(
@@ -48,27 +48,37 @@ export function balance<K extends BstKeyType, T extends IBstHeightNode<K>>(
 export function splay<K extends BstKeyType, T extends IBstNode<K>>(
     key: K, node?: T
 ): T | undefined {
-    if (!node || node.key === key) { return node; }
+    if (!node || node.key === key) {
+        return node;
+    }
 
     if (key < node.key) {
-        if (!node.left) { return node; }
+        if (!node.left) {
+            return node;
+        }
 
         if (key < node.left.key) {
             node.left.left = splay(key, node.left.left);
             node = rotateRight(node);
         } else if (key > node.left.key) {
             node.left.right = splay(key, node.left.right);
-            if (node.left.right) { node.left = rotateLeft(node.left); }
+            if (node.left.right) {
+                node.left = rotateLeft(node.left);
+            }
         }
 
         return (node.left) ? rotateRight(node) : node.left;
     }
     else {
-        if (!node.right) { return node; }
+        if (!node.right) {
+            return node;
+        }
 
         if (key < node.right.key) {
             node.right.left = splay(key, node.right.left);
-            if (node.right.left) { node.right = rotateRight(node.right); }
+            if (node.right.left) {
+                node.right = rotateRight(node.right);
+            }
         }
         else if (key > node.right.key) {
             node.right.right = splay(key, node.right.right);
@@ -79,7 +89,7 @@ export function splay<K extends BstKeyType, T extends IBstNode<K>>(
     }
 }
 
-export function update_height<K extends BstKeyType, T extends IBstHeightNode<K>>(
+function update_height<K extends BstKeyType, T extends IBstHeightNode<K>>(
     node: T
 ): void {
     node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
@@ -87,17 +97,22 @@ export function update_height<K extends BstKeyType, T extends IBstHeightNode<K>>
 
 function getHeight<K extends BstKeyType, T extends IBstHeightNode<K>>(
     node?: T
-): number { return node?.height ?? 0; }
+): number {
+    return node?.height ?? 0;
+}
 
 function getBalanceFactor<K extends BstKeyType, T extends IBstHeightNode<K>>(
     node?: T
-): number { return getHeight(node?.left) - getHeight(node?.right); }
+): number {
+    return getHeight(node?.left) - getHeight(node?.right);
+}
 
 function rotateRight<K extends BstKeyType, T extends IBstNode<K>>(
     node: T
 ): T {
-    if (!node || !node.left)
-    { throw new BalanceError("Invalid node for rotation."); }
+    if (!node || !node.left) {
+        throw new BalanceError("Invalid node for rotation.");
+    }
 
     const newSubRoot: T = node.left as T;
 
@@ -121,8 +136,9 @@ function rotateRightHeight<K extends BstKeyType, T extends IBstHeightNode<K>>(
 function rotateLeft<K extends BstKeyType, T extends IBstNode<K>>(
     node: T
 ): T {
-    if (!node || !node.right)
-    { throw new BalanceError("Invalid node for rotation."); }
+    if (!node || !node.right) {
+        throw new BalanceError("Invalid node for rotation.");
+    }
 
     const newSubRoot: T = node.right as T;
 
